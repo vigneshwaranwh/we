@@ -6,129 +6,124 @@ import { toast } from 'react-toastify';
 
 const Inputs = ({setQuery, setUnits, units}) => {
 
-  const [city, setCity] = useState("");
+    const [city, setCity] = useState("");
 
-  const handleSearchClick = () => {
+    const handleSearchClick = () => {
 
-      if( city ) setQuery({q : city})
+        if( city ) setQuery({q : city})
 
-  }
+    }
 
-  const handleLocationClick = () => {
+    const handleLocationClick = () => {
 
-      if(navigator.geolocation) {
+        if(navigator.geolocation) {
 
-        // toast.info("Fetching users location.")
+            navigator.geolocation.getCurrentPosition(position => {
 
-        navigator.geolocation.getCurrentPosition(position => {
+                let lat = position.coords.latitude;
 
-          // toast.success("Location fetched!")
+                let lon = position.coords.longitude;
 
-          let lat = position.coords.latitude;
+                setQuery({
 
-          let lon = position.coords.longitude;
+                    lat, lon
 
-          setQuery({
+                })
 
-            lat, lon
+            })
 
-          })
+        }
 
-        })
+    }
 
-      }
-
-  }
-
-  const handleUnitsChange = (e) => {
+    const handleUnitsChange = (e) => {
 
         const selectedUnit = e.currentTarget.name;
 
         if( units !== selectedUnit ) setUnits(selectedUnit);
 
-  }
+    }
 
-  return (
+    return (
 
-    <div className="flex flex-row justify-center my-6">
+        <div className="flex flex-row justify-center my-6">
 
-      <div className="flex flex-row justify-center w-3/4 items-center space-x-4">
+            <div className="flex flex-row justify-center w-3/4 items-center space-x-4">
 
-        <input
+                <input
 
-        value={city}
+                    value={city}
 
-        onChange={(e) => setCity(e.target.value)}
+                    onChange={(e) => setCity(e.target.value)}
 
-          placeholder="search for city..."
+                    placeholder="search for city..."
 
-          type="text"
+                    type="text"
 
-          className="text-xl font-normal p-2 w-full shadow-xl focus:outline-none capitalize placeholder:lowercase"
+                    className="text-xl font-normal p-2 w-full shadow-xl focus:outline-none capitalize placeholder:lowercase"
 
-        />
+                />
 
-        <UilSearch
+                <UilSearch
 
-         onClick={handleSearchClick}
+                    onClick={handleSearchClick}
 
-          size={25}
+                    size={25}
 
-          className="text-white cursor-pointer transition ease-out hover:scale-125"
+                    className="text-white cursor-pointer transition ease-out hover:scale-125"
 
-        />
+                />
 
-        <UilLocationPoint
+                <UilLocationPoint
 
-        onClick={handleLocationClick}
+                    onClick={handleLocationClick}
 
-          size={25}
+                    size={25}
 
-          className="text-white cursor-pointer transition ease-out hover:scale-125"
+                    className="text-white cursor-pointer transition ease-out hover:scale-125"
 
-        />
+                />
 
-      </div>
-      
-      <div className="flex flex-row w-1/4 items-center justify-center">
+            </div>
 
-        <button
+            <div className="flex flex-row w-1/4 items-center justify-center">
 
-        onClick={handleUnitsChange}
+                <button
 
-          name="metric"
+                    onClick={handleUnitsChange}
 
-          className="text-xl font-light text-white transition ease-out hover:scale-125"
+                    name="metric"
 
-        >
+                    className="text-xl font-light text-white transition ease-out hover:scale-125"
 
-          °C
+                    >
 
-        </button>
+                    °C
 
-        <p className="text-white text-xl mx-1">|</p>
+                </button>
 
-        <button
+                <p className="text-white text-xl mx-1">|</p>
 
-        onClick={handleUnitsChange}
+                <button
 
-          name="imperial"
+                    onClick={handleUnitsChange}
 
-          className="text-xl font-light text-white transition ease-out hover:scale-125"
+                    name="imperial"
 
-        >
+                    className="text-xl font-light text-white transition ease-out hover:scale-125"
 
-          °F
+                    >
 
-        </button>
+                    °F
 
-      </div>
+                </button>
 
-    </div>
+            </div>
 
-  );
-
+        </div>
+        
+    );
+    
 };
-
 
 export default Inputs;

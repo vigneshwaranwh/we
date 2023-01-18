@@ -6,141 +6,139 @@ const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 const getWeatherData = (infoType, searchParams) => {
 
-  const url = new URL(BASE_URL + "/" + infoType);
+    const url = new URL(BASE_URL + "/" + infoType);
 
-  url.search = new URLSearchParams({ ...searchParams, appid: API_KEY });
+    url.search = new URLSearchParams({ ...searchParams, appid: API_KEY });
   
-  return fetch(url).then((res) => res.json());
+    return fetch(url).then((res) => res.json());
 
 };
 
 const formatCurrentWeather = (data) => {
 
-  const {
+    const {
 
-    coord: { lat, lon },
+        coord: { lat, lon },
 
-    main: { temp, feels_like, temp_min, temp_max, humidity },
+        main: { temp, feels_like, temp_min, temp_max, humidity },
 
-    name,
+        name,
 
-    dt,
+        dt,
 
-    sys: { country, sunrise, sunset },
+        sys: { country, sunrise, sunset },
 
-    weather,
+        weather,
 
-    wind: { speed },
+        wind: { speed },
 
-  } = data;
-  
-  const { main: details, icon } = weather[0];
+    } = data;
 
-  return {
+    const { main: details, icon } = weather[0];
 
-    lon,
+    return {
 
-    lat,
+        lon,
 
-    temp,
+        lat,
 
-    feels_like,
+        temp,
 
-    temp_max,
+        feels_like,
 
-    temp_min,
+        temp_max,
 
-    name,
+        temp_min,
 
-    dt,
+        name,
 
-    country,
+        dt,
 
-    sunrise,
+        country,
 
-    sunset,
+        sunrise,
 
-    details,
+        sunset,
 
-    icon,
+        details,
 
-    speed,
+        icon,
 
-    humidity,
+        speed,
 
-  };
+        humidity,
+
+    };
   
 };
 
 const formatForecastWeather = (data) => {
 
-        let {
+    let {
 
-            timezone,
+        timezone,
 
-            daily,
+        daily,
 
-            hourly
+        hourly
 
-        } = data;
-        
-        daily = daily.slice(1,6).map(d => {
+    } = data;
+    
+    daily = daily.slice(1,6).map(d => {
 
-            return {
+        return {
 
-                title : formatToLocalTime(d.dt, timezone, "ccc"),
+            title : formatToLocalTime(d.dt, timezone, "ccc"),
 
-                temp : d.temp.day,
+            temp : d.temp.day,
 
-                icon : d.weather[0].icon
+            icon : d.weather[0].icon
 
-            }
+        }
 
-        });
+    });
 
-        hourly = hourly.slice(1,6).map(d => {
+    hourly = hourly.slice(1,6).map(d => {
 
-            return {
+        return {
 
-                title : formatToLocalTime(d.dt, timezone, "hh:mm a"),
+            title : formatToLocalTime(d.dt, timezone, "hh:mm a"),
 
-                temp : d.temp,
+            temp : d.temp,
 
-                icon : d.weather[0].icon
+            icon : d.weather[0].icon
 
-            }
+        }
 
-        });
+    });
 
-        return {timezone, daily, hourly};
-        
+    return {timezone, daily, hourly};
+    
 }
 
 const getFormattedWeatherData = async (searchParams) => {
 
-  const formattedCurrentWeather = await getWeatherData(
+    const formattedCurrentWeather = await getWeatherData(
 
-    "weather",
+        "weather",
 
-    searchParams
+        searchParams
 
-  ).then(formatCurrentWeather);
+    ).then(formatCurrentWeather);
 
-  const {lat ,lon} = formattedCurrentWeather;
+    const {lat ,lon} = formattedCurrentWeather;
 
-  const formattedForecastWeather = await getWeatherData("onecall", {
+    const formattedForecastWeather = await getWeatherData("onecall", {
 
-    lat, lon, exclude : "current, minutely, alerts", units : searchParams.units
+        lat, lon, exclude : "current, minutely, alerts", units : searchParams.units
 
-  }).then(formatForecastWeather);
+    }).then(formatForecastWeather);
 
-  return {...formattedCurrentWeather, ...formattedForecastWeather};
+    return {...formattedCurrentWeather, ...formattedForecastWeather};
 
 };
 
 export default getFormattedWeatherData;
-
-//extracted by using luxon package, read about it
 
 const formatToLocalTime = (secs, zone, format = "cccc, dd LLL yyyy' | Local Time : 'hh:mm a") => DateTime.fromSeconds(secs).setZone(zone).toFormat(format);
 
